@@ -1,0 +1,13 @@
+2013-09-10  QianChenglong   <qian_cheng_long@163.com>
+
+	* rc.lua:添加屏幕亮度调节，电池监视
+
+2013-09-09  QianChenglong   <qian_cheng_long@163.com>
+
+	* theme.lua:添加自定义主题
+	* rc.lua:添加网络流量监视，内存监视，声音控制
+
+2013-09-07  QianChenglong   <qian_cheng_long@163.com>
+
+	* rc.lua:Win+m ==> Win+x
+			 Win+n ==> Win+z
