@@ -1,3 +1,7 @@
+2013-11-17  QianChenglong   <qian_cheng_long@163.com>
+
+	* rc.lua:添加alt+tab切换窗口功能
+
 2013-09-10  QianChenglong   <qian_cheng_long@163.com>
 
 	* rc.lua:添加屏幕亮度调节，电池监视

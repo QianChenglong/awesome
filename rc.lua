@@ -640,7 +640,7 @@ end),
 awful.key({ modkey }, "p", function() menubar.show() end),
 --}}}
 -- Custom key bindings{{{
-awful.key({ modkey, }, "s", function () awful.util.spawn_with_shell("chromium") end),
+awful.key({ modkey, }, "s", function () awful.util.spawn_with_shell("google-chrome-stable") end),
 awful.key({ modkey, }, "e", function () awful.util.spawn("doublecmd") end),
 -- awful.key({ modkey },            "r",     function () awful.util.spawn("launchy") end),
 awful.key({ altkey },            "f",     function () awful.util.spawn("HappySearch") end),
@@ -668,6 +668,23 @@ function (c)
     c.maximized_horizontal = not c.maximized_horizontal
     c.maximized_vertical   = not c.maximized_vertical
 end),
+awful.key({ altkey,           }, "Tab",
+    function ()
+        -- awful.client.focus.history.previous()
+        awful.client.focus.byidx(-1)
+        if client.focus then
+            client.focus:raise()
+        end
+    end),
+
+awful.key({ altkey, "Shift"   }, "Tab",
+    function ()
+        -- awful.client.focus.history.previous()
+        awful.client.focus.byidx(1)
+        if client.focus then
+            client.focus:raise()
+        end
+    end),
 -- custome--{{{
 -- 调整窗口大小
 awful.key({ modkey, "Control" }, "Next",  function () awful.client.moveresize( 20,  20, -40, -40) end),
