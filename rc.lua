@@ -761,6 +761,7 @@ awful.rules.rules = {
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
     { rule = { class = "Chromium" },  properties = { floating = false, tag = tags[1][1] }},
+    { rule = { class = "VirtualBox" },  properties = { floating = false, tag = tags[1][9] }},
     -- { rule = { class = "Gvim" },  properties = {floating = false, tag = tags[1][2]}}
     { rule = { name = "Question.text"},  properties = {floating = false, tag = tags[1][8]}},
     -- { rule_any = { class =  } }

@@ -24,7 +24,8 @@ theme.fg_minimize   = "#ffffff"
 
 theme.border_width  = "2"
 theme.border_normal = "#000000"
-theme.border_focus  = "#1e90ff"
+-- theme.border_focus  = "#1e90ff"
+theme.border_focus  = "#ff0000"
 theme.border_marked = "#91231c"
 
 -- Custome{{{
