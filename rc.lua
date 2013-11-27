@@ -454,7 +454,7 @@ function update_email()
     mailWidget:set_markup(awful.util.pread("/bin/awesome-email.py"))
 end
 mailWidget = fixwidthtextbox('Email')
-mailWidgetTimer = timer({ timeout = 300 })
+mailWidgetTimer = timer({ timeout = 60 })
 mailWidgetTimer:connect_signal("timeout", update_email)
 update_email()
 mailWidgetTimer:start()
