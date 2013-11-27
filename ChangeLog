@@ -1,3 +1,10 @@
+2013-11-27  QianChenglong   <qian_cheng_long@163.com>
+
+    * rc.lua:
+            1. 时间颜色显示
+	    2. pidgin规则
+	    3. 邮件提醒和点击弹出雷鸟，并切换至雷鸟所在的tag
+
 2013-11-17  QianChenglong   <qian_cheng_long@163.com>
 
 	* rc.lua:添加alt+tab切换窗口功能

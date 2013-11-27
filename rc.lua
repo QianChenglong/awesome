@@ -1,5 +1,5 @@
 --Load library {{{
--- Standard awesome library
+-- Standard awesome library--{{{
 local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
@@ -11,12 +11,10 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
-
-local fixwidthtextbox = require("fixwidthtextbox")
-
 --}}}
-
 -- Custome lib{{{
+local fixwidthtextbox = require("fixwidthtextbox")
+--}}}
 --}}}
 
 -- Custome variables{{{
@@ -114,10 +112,10 @@ end
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-   { "manual", terminal .. " -x zsh -ic \"man awesome\"" },
-   { "edit config", editor_cmd .. " " .. awesome.conffile },
-   { "restart(&r)", awesome.restart },
-   { "quit", awesome.quit }
+   -- { "manual", terminal .. " -x zsh -ic \"man awesome\"" },
+   -- { "edit config", editor_cmd .. " " .. awesome.conffile },
+   { "restart(&r)", awesome.restart }
+   -- { "quit", awesome.quit }
 }
 
 mymainmenu = awful.menu({ items = { { "awesome(&a)", myawesomemenu, beautiful.awesome_icon },
@@ -135,9 +133,9 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- {{{ Wibox
 -- Clock--{{{
-mytextclock = awful.widget.textclock("%m-%d %H:%M:%S %a ", 1)
+mytextclock = awful.widget.textclock("<span color='yellow'>%m-%d</span> <span color='red'>%H:%M:%S</span> %a ", 1)
 --}}}
--- {{{ Network speed indicator
+-- Network speed indicator--{{{
 function update_netstat()
     local interval = netwidget_clock.timeout
     local netif, text
@@ -189,7 +187,7 @@ netwidget_clock:connect_signal("timeout", update_netstat)
 netwidget_clock:start()
 update_netstat()
 -- }}}
--- {{{ memory usage indicator
+-- Memory usage indicator--{{{
 function update_memwidget()
     local f = io.open('/proc/meminfo')
     local total = f:read('*l')
@@ -214,7 +212,7 @@ mem_clock = timer({ timeout = 2 })
 mem_clock:connect_signal("timeout", update_memwidget)
 mem_clock:start()
 -- }}}
--- brightness Controller{{{
+-- Brightness Controller--{{{
 brightnessicon = wibox.widget.imagebox()
 brightnessicon:set_image(confdir .. "/icons/brightness_16.png")
 io.popen('sudo chmod 666 /sys/class/backlight/intel_backlight/brightness')
@@ -263,7 +261,7 @@ brightnesswidget:buttons(awful.util.table.join(
 ))
 brightnessctl("update", brightnesswidget)
 --}}}
--- Volume Controller{{{
+-- Volume Controller--{{{
 function volumectl (mode, widget)
     if mode == "update" then
         local f = io.popen("pamixer --get-volume")
@@ -316,7 +314,7 @@ volumewidget:buttons(awful.util.table.join(
 ))
 volumectl("update", volumewidget)
 --}}}
---{{{ battery indicator
+-- Battery indicator--{{{
 last_bat_warning = 0
 local battery_state = {
     unknown     = '<span color="yellow">?',
@@ -375,7 +373,7 @@ bat_clock = timer({ timeout = 5 })
 bat_clock:connect_signal("timeout", update_batwidget)
 bat_clock:start()
 -- }}}
--- -- mplayer Controller{{{
+-- -- mplayer Controller--{{{
 -- --icons{{{
 -- mplayericon = wibox.widget.imagebox()
 -- -- mplayericon:set_image(confdir .. "/icons/play_16.png")
@@ -451,8 +449,25 @@ bat_clock:start()
 -- ))
 -- mplayerctl("update", mplayerwidget)
 -- --}}}
-
+--{{{ Email
+function update_email()
+    mailWidget:set_markup(awful.util.pread("/bin/awesome-email.py"))
+end
+mailWidget = fixwidthtextbox('Email')
+mailWidgetTimer = timer({ timeout = 300 })
+mailWidgetTimer:connect_signal("timeout", update_email)
+update_email()
+mailWidgetTimer:start()
+mailWidget:buttons(awful.util.table.join(
+awful.button({ }, 1, function ()
+    awful.util.spawn("thunderbird")
+    awful.tag.viewidx(5)
+    end)
+)
+)
+--}}}
 -- Create a wibox for each screen and add it--{{{
+-- Default--{{{
 mywibox = {}
 mypromptbox = {}
 mylayoutbox = {}
@@ -513,23 +528,20 @@ for s = 1, screen.count() do
     awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
     -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
-
     -- Create a tasklist widget
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
-
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
-
-    -- Widgets that are aligned to the left
+    --}}}
+    -- Widgets that are aligned to the left--{{{
     local left_layout = wibox.layout.fixed.horizontal()
-    -- left_layout:add(volume_widget)
-    -- left_layout:add(mylauncher)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
     --}}}
-
     -- Widgets that are aligned to the right--{{{
     local right_layout = wibox.layout.fixed.horizontal()
+    if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(mailWidget)
     right_layout:add(netwidget)
     right_layout:add(memwidget)
     right_layout:add(volumewidget)
@@ -538,7 +550,6 @@ for s = 1, screen.count() do
     right_layout:add(batwidget)
     -- right_layout:add(mplayericon)
     -- right_layout:add(mplayerwidget)
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
     --}}}
@@ -548,9 +559,11 @@ for s = 1, screen.count() do
     layout:set_middle(mytasklist[s])
     layout:set_right(right_layout)
 
-    mywibox[s]:set_widget(layout)--}}}
+    mywibox[s]:set_widget(layout)
+    --}}}
 end
--- }}}
+--}}}
+--}}}
 
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
@@ -645,6 +658,7 @@ awful.key({ modkey },            "c",     function () awful.util.spawn("sudo pow
 )
 --}}}
 -- clientkeys--{{{
+-- Default--{{{
 clientkeys = awful.util.table.join(
 awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
 awful.key({ altkey,           }, "F4",     function (c) c:kill()                         end),
@@ -680,14 +694,19 @@ awful.key({ altkey, "Shift"   }, "Tab",
             client.focus:raise()
         end
     end),
--- custome--{{{
--- 调整窗口大小
-awful.key({ modkey, "Control" }, "Next",  function () awful.client.moveresize( 20,  20, -40, -40) end),
-awful.key({ modkey, "Control" }, "Prior", function () awful.client.moveresize(-20, -20,  40,  40) end),
-awful.key({ modkey, "Control"}, 3,  function () awful.client.moveresize(  0,  20,   0,   0) end),
-awful.key({ modkey, "Control"}, "Up",    function () awful.client.moveresize(  0, -20,   0,   0) end),
-awful.key({ modkey, "Control"}, "Left",  function () awful.client.moveresize(-20,   0,   0,   0) end),
-awful.key({ modkey, "Control"}, "Right", function () awful.client.moveresize( 20,   0,   0,   0) end)
+--}}}
+-- Custome--{{{
+-- 调整浮动窗口位置--{{{
+awful.key({ modkey, "Shift" }, "Up",    function () awful.client.moveresize(  0, -20,   0,   0) end),
+awful.key({ modkey, "Shift" }, "Down",  function () awful.client.moveresize(  0,  20,   0,   0) end),
+awful.key({ modkey, "Shift" }, "Left",  function () awful.client.moveresize(-20,   0,   0,   0) end),
+awful.key({ modkey, "Shift" }, "Right", function () awful.client.moveresize( 20,   0,   0,   0) end)
+
+-- awful.key({ modkey, "Shift" }, "Next",  function () awful.client.moveresize(  0,   0, -40, -40) end),
+-- awful.button({ }, 4,  function () awful.client.moveresize(  0,   0, -40, -40) end),
+-- awful.button({ "Shift" }, 5, function () awful.client.moveresize(  0,   0,  40,  40) end)
+-- awful.key({ modkey, "Shift" }, "Prior", function () awful.client.moveresize(  0,   0,  40,  40) end)
+--}}}
 --}}}
 )
 --}}}
@@ -749,16 +768,20 @@ awful.rules.rules = {
     -- { rule = { class = "MPlayer" }, properties = { floating = true } },
     { rule = { class = "pinentry" }, properties = { floating = true } },
     { rule = { class = "gimp" }, properties = { floating = true } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
     -- { rule = { class = "Chromium" },  properties = { floating = false, tag = tags[1][1] }},
     { rule = { class = "VirtualBox" },  properties = { floating = false, tag = tags[1][9] }},
     -- { rule = { class = "Gvim" },  properties = {floating = false, tag = tags[1][2]}}
     { rule = { name = "Question.text"},  properties = {floating = false, tag = tags[1][8]}},
-    { rule = { class = "Pidgin"},  properties = {floating = true, tag = tags[1][8]}},
+    { rule = { class = "Pidgin"},
+      properties = {floating = true, tag = tags[1][8]},
+      callback = function(c) c:geometry({x=0, y=15, width=300, height=748}) end
+    },
+    { rule = { class = "Pidgin", role = "conversation"},
+      properties = {floating = true, tag = tags[1][8]},
+      callback = function(c) c:geometry({x=300, y=15, width=1066, height=748}) end
+    },
     { rule = { class = "XMind"},  properties = {floating = false, tag = tags[1][7]}},
-    -- { rule_any = { class =  } }
+    { rule = { class = "Thunderbird"},  properties = {floating = false, tag = tags[1][6]}},
     { rule = { class = "Doublecmd" },  properties = { floating = false }},
     { rule = { class = "Gnome-terminal" },  properties = { floating = true }},
 }
