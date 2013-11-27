@@ -17,11 +17,6 @@ local fixwidthtextbox = require("fixwidthtextbox")
 --}}}
 
 -- Custome lib{{{
--- naughty{{{
--- naughty.config.default_preset.fg               = beautiful.fg_focus or '#ffffff'
--- naughty.config.default_preset.bg               = beautiful.bg_focus or '#535d6c'
--- naughty.config.presets.normal.border_color     = beautiful.border_focus or '#535d6c'
---}}}
 --}}}
 
 -- Custome variables{{{
@@ -107,7 +102,7 @@ end
 -- Define a tag table which hold all screen tags.
 tags = {
    names  = {1, 2, 3, 4, 5, 6, 7, 8, 9},
-   layout = { layouts[1], layouts[2], layouts[2], layouts[2], layouts[2],
+   layout = { layouts[2], layouts[2], layouts[2], layouts[2], layouts[2],
               layouts[2], layouts[2], layouts[2], layouts[6]
  }}
 
@@ -121,13 +116,12 @@ end
 myawesomemenu = {
    { "manual", terminal .. " -x zsh -ic \"man awesome\"" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
-   { "restart", awesome.restart },
+   { "restart(&r)", awesome.restart },
    { "quit", awesome.quit }
 }
 
-mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "open terminal", terminal },
-                                    { "shutdown(&c)", "systemctl poweroff" },
+mymainmenu = awful.menu({ items = { { "awesome(&a)", myawesomemenu, beautiful.awesome_icon },
+                                    { "shutdown(&s)", "systemctl poweroff" },
                                     { "reboot(&r)", "systemctl reboot" },
                                   }
                         })
@@ -140,8 +134,9 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- }}}
 
 -- {{{ Wibox
--- Create a textclock widget
-mytextclock = awful.widget.textclock("%m月%d日 %H:%M:%S %A ", 1)
+-- Clock--{{{
+mytextclock = awful.widget.textclock("%m-%d %H:%M:%S %a ", 1)
+--}}}
 -- {{{ Network speed indicator
 function update_netstat()
     local interval = netwidget_clock.timeout
@@ -373,89 +368,89 @@ function update_batwidget()
     batwidget:set_markup(state_text .. percent .. '%</span>')
 end
 batwidget = fixwidthtextbox('↯??%')
-batwidget.width = 29
+batwidget.width = 35
 batwidget:set_align("right")
 update_batwidget()
 bat_clock = timer({ timeout = 5 })
 bat_clock:connect_signal("timeout", update_batwidget)
 bat_clock:start()
 -- }}}
--- mplayer Controller{{{
---icons{{{
-mplayericon = wibox.widget.imagebox()
--- mplayericon:set_image(confdir .. "/icons/play_16.png")
---}}}
-mplayercontrol="/home/qian/.music.fifo"
-mplayeroutput="/home/qian/.music.output"
-mplayer_is_play = true
-function mplayer_is_run()
-    local f = io.popen("pgrep mplayer")
-    local pid = f:read("*all")
-    if tonumber(pid) then
-        return true
-    else
-        return false
-    end
-end
-function mplayerctl (mode, widget)
-    if mode == "update" then
-        if mplayer_is_run() and mplayer_is_play then
-            -- printError(mplayer_is_run())
-            io.popen("echo \"get_file_name\">" .. mplayercontrol)
-            local f = io.popen("tail -n 10 " .. mplayeroutput .. "|grep -oP \'(?<=ANS_FILENAME=).*\'|tail -n 1|sed \"s/\'//g;s/\\..*//\"")
-            local s = f:read('*alll')
-            -- printError(s)
-            mplayerwidget.width = 80
-            mplayerwidget:set_markup(s)
-            mplayericon:set_image(confdir .. "/icons/play_16.png")
+-- -- mplayer Controller{{{
+-- --icons{{{
+-- mplayericon = wibox.widget.imagebox()
+-- -- mplayericon:set_image(confdir .. "/icons/play_16.png")
+-- --}}}
+-- mplayercontrol="/home/qian/.music.fifo"
+-- mplayeroutput="/home/qian/.music.output"
+-- mplayer_is_play = true
+-- function mplayer_is_run()
+    -- local f = io.popen("pgrep mplayer")
+    -- local pid = f:read("*all")
+    -- if tonumber(pid) then
+        -- return true
+    -- else
+        -- return false
+    -- end
+-- end
+-- function mplayerctl (mode, widget)
+    -- if mode == "update" then
+        -- if mplayer_is_run() and mplayer_is_play then
+            -- -- printError(mplayer_is_run())
+            -- io.popen("echo \"get_file_name\">" .. mplayercontrol)
+            -- local f = io.popen("tail -n 10 " .. mplayeroutput .. "|grep -oP \'(?<=ANS_FILENAME=).*\'|tail -n 1|sed \"s/\'//g;s/\\..*//\"")
+            -- local s = f:read('*alll')
+            -- -- printError(s)
+            -- mplayerwidget.width = 80
+            -- mplayerwidget:set_markup(s)
+            -- mplayericon:set_image(confdir .. "/icons/play_16.png")
 
-            -- -- 控制文件大小
-            -- local f = io.popen("stat -c %s " .. mplayeroutput)
-            -- local new_size = f:read("*all")
-            -- f.close()
-            -- new_size = tonumber(new_size)
-            -- if (new_size > 1024*1024) then
-                -- io.popen("cat /dev/null >" .. mplayeroutput)
+            -- -- -- 控制文件大小
+            -- -- local f = io.popen("stat -c %s " .. mplayeroutput)
+            -- -- local new_size = f:read("*all")
+            -- -- f.close()
+            -- -- new_size = tonumber(new_size)
+            -- -- if (new_size > 1024*1024) then
+                -- -- io.popen("cat /dev/null >" .. mplayeroutput)
+            -- -- end
+        -- else
+            -- if not mplayer_is_run() then
+                -- -- printError(mplayer_is_run())
+                -- mplayerwidget.width = 0
+                -- mplayericon:set_image(nil)
             -- end
-        else
-            if not mplayer_is_run() then
-                -- printError(mplayer_is_run())
-                mplayerwidget.width = 0
-                mplayericon:set_image(nil)
-            end
-        end
-    end
+        -- end
+    -- end
 
-    if mode == "next" then
-        io.popen("echo \"pt_step 1\">" .. mplayercontrol)
-        mplayerctl("update", widget)
-    elseif mode == "last" then
-        io.popen("echo \"pt_step -1\">" .. mplayercontrol)
-        mplayerctl("update", widget)
-    elseif mode == "pause" then
-        io.popen("echo \"pause\">" .. mplayercontrol)
-        mplayer_is_play = not mplayer_is_play
-        if mplayer_is_play then
-            mplayericon:set_image(confdir .. "/icons/play_16.png")
-        else
-            mplayericon:set_image(confdir .. "/icons/pause_16.png")
-        end
-    end
-end
-mplayer_clock = timer({ timeout = 5 })
-mplayer_clock:connect_signal("timeout", function () mplayerctl("update", mplayerwidget) end)
-mplayer_clock:start()
+    -- if mode == "next" then
+        -- io.popen("echo \"pt_step 1\">" .. mplayercontrol)
+        -- mplayerctl("update", widget)
+    -- elseif mode == "last" then
+        -- io.popen("echo \"pt_step -1\">" .. mplayercontrol)
+        -- mplayerctl("update", widget)
+    -- elseif mode == "pause" then
+        -- io.popen("echo \"pause\">" .. mplayercontrol)
+        -- mplayer_is_play = not mplayer_is_play
+        -- if mplayer_is_play then
+            -- mplayericon:set_image(confdir .. "/icons/play_16.png")
+        -- else
+            -- mplayericon:set_image(confdir .. "/icons/pause_16.png")
+        -- end
+    -- end
+-- end
+-- mplayer_clock = timer({ timeout = 5 })
+-- mplayer_clock:connect_signal("timeout", function () mplayerctl("update", mplayerwidget) end)
+-- mplayer_clock:start()
 
-mplayerwidget = fixwidthtextbox('')
-mplayerwidget:set_align('right')
-mplayerwidget:buttons(awful.util.table.join(
-awful.button({ }, 1, function () mplayerctl("pause", mplayerwidget) end),
-awful.button({ }, 4, function () mplayerctl("last", mplayerwidget) end),
-awful.button({ }, 5, function () mplayerctl("next", mplayerwidget) end)
--- awful.button({ }, 3, function () awful.util.spawn("pavucontrol") end),
-))
-mplayerctl("update", mplayerwidget)
---}}}
+-- mplayerwidget = fixwidthtextbox('')
+-- mplayerwidget:set_align('right')
+-- mplayerwidget:buttons(awful.util.table.join(
+-- awful.button({ }, 1, function () mplayerctl("pause", mplayerwidget) end),
+-- awful.button({ }, 4, function () mplayerctl("last", mplayerwidget) end),
+-- awful.button({ }, 5, function () mplayerctl("next", mplayerwidget) end)
+-- -- awful.button({ }, 3, function () awful.util.spawn("pavucontrol") end),
+-- ))
+-- mplayerctl("update", mplayerwidget)
+-- --}}}
 
 -- Create a wibox for each screen and add it--{{{
 mywibox = {}
@@ -541,8 +536,8 @@ for s = 1, screen.count() do
     -- right_layout:add(brightnessicon)
     right_layout:add(brightnesswidget)
     right_layout:add(batwidget)
-    right_layout:add(mplayericon)
-    right_layout:add(mplayerwidget)
+    -- right_layout:add(mplayericon)
+    -- right_layout:add(mplayerwidget)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
@@ -689,7 +684,7 @@ awful.key({ altkey, "Shift"   }, "Tab",
 -- 调整窗口大小
 awful.key({ modkey, "Control" }, "Next",  function () awful.client.moveresize( 20,  20, -40, -40) end),
 awful.key({ modkey, "Control" }, "Prior", function () awful.client.moveresize(-20, -20,  40,  40) end),
-awful.key({ modkey, "Control"}, "Down",  function () awful.client.moveresize(  0,  20,   0,   0) end),
+awful.key({ modkey, "Control"}, 3,  function () awful.client.moveresize(  0,  20,   0,   0) end),
 awful.key({ modkey, "Control"}, "Up",    function () awful.client.moveresize(  0, -20,   0,   0) end),
 awful.key({ modkey, "Control"}, "Left",  function () awful.client.moveresize(-20,   0,   0,   0) end),
 awful.key({ modkey, "Control"}, "Right", function () awful.client.moveresize( 20,   0,   0,   0) end)
@@ -751,21 +746,21 @@ awful.rules.rules = {
     focus = awful.client.focus.filter,
     keys = clientkeys,
     buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
-    properties = { floating = true } },
-    { rule = { class = "pinentry" },
-    properties = { floating = true } },
-    { rule = { class = "gimp" },
-    properties = { floating = true } },
+    -- { rule = { class = "MPlayer" }, properties = { floating = true } },
+    { rule = { class = "pinentry" }, properties = { floating = true } },
+    { rule = { class = "gimp" }, properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
-    { rule = { class = "Chromium" },  properties = { floating = false, tag = tags[1][1] }},
+    -- { rule = { class = "Chromium" },  properties = { floating = false, tag = tags[1][1] }},
     { rule = { class = "VirtualBox" },  properties = { floating = false, tag = tags[1][9] }},
     -- { rule = { class = "Gvim" },  properties = {floating = false, tag = tags[1][2]}}
     { rule = { name = "Question.text"},  properties = {floating = false, tag = tags[1][8]}},
+    { rule = { class = "Pidgin"},  properties = {floating = true, tag = tags[1][8]}},
+    { rule = { class = "XMind"},  properties = {floating = false, tag = tags[1][7]}},
     -- { rule_any = { class =  } }
     { rule = { class = "Doublecmd" },  properties = { floating = false }},
+    { rule = { class = "Gnome-terminal" },  properties = { floating = true }},
 }
 -- }}}
 
