@@ -206,7 +206,7 @@ function update_memwidget()
 end
 memwidget = fixwidthtextbox('Mem ??')
 memwidget:set_align('right')
-memwidget.width = 24
+-- memwidget.width = 24
 update_memwidget()
 mem_clock = timer({ timeout = 2 })
 mem_clock:connect_signal("timeout", update_memwidget)
@@ -251,7 +251,7 @@ brightness_clock:connect_signal("timeout", function () brightnessctl("update", b
 brightness_clock:start()
 
 brightnesswidget = fixwidthtextbox('(brightness)')
-brightnesswidget.width = 30
+-- brightnesswidget.width = 30
 brightnesswidget:set_align('right')
 brightnesswidget:buttons(awful.util.table.join(
     awful.button({ }, 4, function () brightnessctl("up", brightnesswidget) end),
@@ -304,7 +304,7 @@ volume_clock:connect_signal("timeout", function () volumectl("update", volumewid
 volume_clock:start()
 
 volumewidget = fixwidthtextbox('(volume)')
-volumewidget.width = 29
+-- volumewidget.width = 29
 volumewidget:set_align('right')
 volumewidget:buttons(awful.util.table.join(
     awful.button({ }, 4, function () volumectl("up", volumewidget) end),
@@ -366,7 +366,7 @@ function update_batwidget()
     batwidget:set_markup(state_text .. percent .. '%</span>')
 end
 batwidget = fixwidthtextbox('↯??%')
-batwidget.width = 35
+-- batwidget.width = 35
 batwidget:set_align("right")
 update_batwidget()
 bat_clock = timer({ timeout = 5 })
@@ -461,7 +461,7 @@ mailWidgetTimer:start()
 mailWidget:buttons(awful.util.table.join(
 awful.button({ }, 1, function ()
     awful.util.spawn("thunderbird")
-    awful.tag.viewidx(5)
+    awful.tag.viewonly(awful.tag.gettags(mouse.screen)[6])
     end)
 )
 )
@@ -635,7 +635,21 @@ awful.key({ modkey, "Control" }, "n", awful.client.restore),
 -- end),
 
 -- Prompt
-awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+awful.key({ modkey },            "r",
+function ()
+    local promptbox = mypromptbox[mouse.screen]
+    awful.prompt.run({ prompt = "Run:" },
+    promptbox.widget,
+    function (command)
+        local result = awful.util.spawn("zsh -i -c " .. command)
+        -- if type(result) == "string" then
+            -- promptbox.widget.text = result
+        -- end
+    end,
+    awful.completion.shell,
+    awful.util.getdir("cache") .. "/history"
+    )
+end),
 
 awful.key({ modkey }, "x",
 function ()
@@ -653,7 +667,8 @@ awful.key({ modkey, }, "e", function () awful.util.spawn("doublecmd") end),
 -- awful.key({ modkey },            "r",     function () awful.util.spawn("launchy") end),
 awful.key({ altkey },            "f",     function () awful.util.spawn("HappySearch") end),
 awful.key({ altkey },            "r",     function () awful.util.spawn("HappyRun") end),
-awful.key({ modkey },            "c",     function () awful.util.spawn("sudo poweroff") end)
+awful.key({ modkey },            "c",     function () awful.util.spawn("sudo poweroff") end),
+awful.key({ "Ctrl", altkey },            "a",     function () awful.util.spawn("shutter -s") end)
 --}}}
 )
 --}}}
@@ -771,8 +786,10 @@ awful.rules.rules = {
     -- { rule = { class = "Chromium" },  properties = { floating = false, tag = tags[1][1] }},
     { rule = { class = "VirtualBox" },  properties = { floating = false, tag = tags[1][9] }},
     -- { rule = { class = "Gvim" },  properties = {floating = false, tag = tags[1][2]}}
-    { rule = { name = "Question.text"},  properties = {floating = false, tag = tags[1][8]}},
-    { rule = { class = "Pidgin"},
+    { rule = { name = "Question (/data/OS/Linux/Lnk) - GVIM1"},  properties = {floating = false, tag = tags[1][6]}},
+    { rule = { name = "Todo (/data/OS/Linux/Lnk) - GVIM1"},  properties = {floating = false, tag = tags[1][6]}},
+    { rule = { class = "Pidgin" },
+      except = { rotle = "conversation" },
       properties = {floating = true, tag = tags[1][8]},
       callback = function(c) c:geometry({x=0, y=15, width=300, height=748}) end
     },
@@ -782,7 +799,7 @@ awful.rules.rules = {
     },
     { rule = { class = "XMind"},  properties = {floating = false, tag = tags[1][7]}},
     { rule = { class = "Thunderbird"},  properties = {floating = false, tag = tags[1][6]}},
-    { rule = { class = "Doublecmd" },  properties = { floating = false }},
+    -- { rule = { class = "Doublecmd" },  properties = { floating = false }},
     { rule = { class = "Gnome-terminal" },  properties = { floating = true }},
 }
 -- }}}

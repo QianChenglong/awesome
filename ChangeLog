@@ -1,10 +1,25 @@
+2013-11-29  QianChenglong   <qian_cheng_long@163.com>
+
+	* rc.lua:
+	 1. Win+R执行zsh，可以执行alias
+
+2013-11-28  QianChenglong   <qian_cheng_long@163.com>
+
+	* rc.lua:
+	 1. todo和question固定到指定tag
+
+2013-11-28  QianChenglong   <qian_cheng_long@163.com>
+
+	* rc.lua:
+	1. 增加shutter截图
+
 2013-11-27  QianChenglong   <qian_cheng_long@163.com>
 
-    * rc.lua:
-            1. 时间颜色显示
-	    2. pidgin规则
-	    3. 邮件提醒和点击弹出雷鸟，并切换至雷鸟所在的tag
-	    4. 修改邮件检查时间为60s
+	* rc.lua:
+	1. 时间颜色显示
+	2. pidgin规则
+	3. 邮件提醒和点击弹出雷鸟，并切换至雷鸟所在的tag
+	4. 修改邮件检查时间为60s
 
 2013-11-17  QianChenglong   <qian_cheng_long@163.com>
 
@@ -21,5 +36,6 @@
 
 2013-09-07  QianChenglong   <qian_cheng_long@163.com>
 
-	* rc.lua:Win+m ==> Win+x
-			 Win+n ==> Win+z
+	* rc.lua:
+	Win+m ==> Win+x
+	Win+n ==> Win+z
